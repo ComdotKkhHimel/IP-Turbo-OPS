@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IP Unblocker</title>
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: #00ff00;
+      font-family: monospace;
+    }
+    .container {
+      max-width: 600px;
+      margin: 5rem auto;
+      padding: 2rem;
+      background: #1a1a1a;
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.5rem;
+      background: #111;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+    button:hover {
+      background-color: #00ff00;
+      color: #000;
+    }
+    .info {
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="info">IP Unblocker Interface</h2>
+    <div class="info">Your IP: <span id="currentIp">Loading...</span></div>
+    <form id="unblockForm">
+      <label>Enter IP Address to Unblock:</label>
+      <input type="text" id="ip" name="ip" required />
+      <button type="button" id="autoDetect">Auto-Detect My IP</button>
+      <button type="submit">Unblock IP</button>
+    </form>
+    <div id="result" class="info"></div>
+    <button onclick="location.reload()">Refresh</button>
+  </div>
+
+  <script>
+    async function fetchCurrentIP() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        document.getElementById('currentIp').textContent = data.ip;
+      } catch {
+        document.getElementById('currentIp').textContent = 'Unavailable';
+      }
+    }
+
+    document.getElementById('autoDetect').onclick = async () => {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        document.getElementById('ip').value = data.ip;
+      } catch {
+        alert('Could not detect IP.');
+      }
+    };
+
+    document.getElementById('unblockForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const ip = document.getElementById('ip').value;
+      const result = document.getElementById('result');
+      result.textContent = 'Working...';
+
+      try {
+        const response = await fetch('/unblock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ip })
+        });
+        const data = await response.json();
+        result.textContent = response.ok ? data.status : data.error;
+      } catch {
+        result.textContent = 'Request failed. Ensure Flask is running.';
+      }
+    };
+
+    fetchCurrentIP();
+  </script>
+</body>
+</html>
