@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP Unblocker</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>IP Unblocker</h2>
+    <button type="button" onclick="getCurrentIP()">Get Current IP</button>
+    <form method="POST" action="unblock.php">
+      <input type="text" name="ip" id="ipInput" placeholder="Enter your current IP address" required>
+      <button type="submit">Unblock IP</button>
+    </form>
+    <div id="status"></div>
+  </div>
+  <script>
+    function getCurrentIP() {
+      fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('ipInput').value = data.ip;
+        })
+        .catch(error => {
+          document.getElementById('status').textContent = 'Failed to fetch IP';
+        });
+    }
+  </script>
+</body>
+</html>
